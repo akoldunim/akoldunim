@@ -3,33 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мои файлы</title>
+    <title>Мои Файлы</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f6f8fa; }
-        .container { max-width: 800px; margin: auto; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        header { padding: 20px; border-bottom: 1px solid #e1e4e8; }
-        header h1 { margin: 0; }
-        #file-list { list-style-type: none; padding: 20px; }
-        #file-list li { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #e1e4e8; }
-        #file-list li:last-child { border-bottom: none; }
-        #file-list a { text-decoration: none; color: #0366d6; font-weight: 500; font-size: 16px; }
-        #file-list a:hover { text-decoration: underline; }
-        .icon { margin-right: 15px; width: 20px; height: 20px; }
-        .loader { text-align: center; padding: 40px; font-size: 18px; color: #586069; }
-        .back-link { padding: 0 20px 20px; }
+        /* CSS Переменные для легкой смены темы */
+        :root {
+            --bg-color: #f6f8fa;
+            --container-bg: #ffffff;
+            --text-color: #24292e;
+            --border-color: #e1e4e8;
+            --link-color: #0366d6;
+            --link-hover-bg: #f1f8ff;
+            --header-bg: #f6f8fa;
+            --shadow-color: rgba(149, 157, 165, 0.1);
+        }
+
+        /* Стиль для темной темы */
+        body.dark-mode {
+            --bg-color: #0d1117;
+            --container-bg: #161b22;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+            --link-color: #58a6ff;
+            --link-hover-bg: #1f6feb33;
+            --header-bg: #161b22;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Общие стили и анимация появления */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 8px 24px var(--shadow-color);
+            overflow: hidden;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        #theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+        }
+        #theme-toggle:hover {
+            background-color: var(--border-color);
+        }
+        #theme-toggle .icon {
+            width: 22px;
+            height: 22px;
+            fill: var(--text-color);
+        }
+
+        #file-list {
+            list-style-type: none;
+            padding: 10px;
+            margin: 0;
+        }
+
+        #file-list li {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 6px;
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0; /* Начальное состояние для анимации */
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        #file-list li:hover {
+            background-color: var(--link-hover-bg);
+            transform: scale(1.02);
+        }
+
+        #file-list a {
+            text-decoration: none;
+            color: var(--link-color);
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        #file-list .icon {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            fill: var(--text-color);
+            flex-shrink: 0;
+        }
+
+        /* Анимация загрузчика */
+        .loader {
+            display: flex;
+            justify-content: center;
+            padding: 50px;
+        }
+        .spinner {
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--link-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
     </style>
 </head>
 <body>
 
     <div class="container">
         <header>
-            <h1 id="header-title">Мои файлы</h1>
+            <h1 id="header-title">Мои Файлы</h1>
+            <button id="theme-toggle" title="Сменить тему">
+                <!-- Иконка будет вставлена через JS -->
+            </button>
         </header>
         
-        <div id="path-navigator"></div>
-
         <ul id="file-list">
-            <div class="loader">Загрузка данных...</div>
+            <!-- Содержимое генерируется скриптом -->
         </ul>
     </div>
 
@@ -40,64 +165,80 @@
 
         const REPO = `${USERNAME}.github.io`;
         const fileList = document.getElementById('file-list');
-        const headerTitle = document.getElementById('header-title');
-        const pathNavigator = document.getElementById('path-navigator');
 
+        // --- ЛОГИКА ТЕМНОЙ ТЕМЫ ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 10a1 1 0 011-1h1a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>`;
+        const moonIcon = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>`;
+
+        // Проверяем сохраненную тему при загрузке
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.innerHTML = sunIcon;
+        } else {
+            themeToggle.innerHTML = moonIcon;
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                themeToggle.innerHTML = sunIcon;
+                localStorage.setItem('theme', 'dark'); // Сохраняем выбор
+            } else {
+                themeToggle.innerHTML = moonIcon;
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // --- ЛОГИКА ОТОБРАЖЕНИЯ ФАЙЛОВ ---
         async function fetchAndDisplayFiles(path = '') {
-            fileList.innerHTML = '<div class="loader">Загрузка данных...</div>';
+            fileList.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
             const apiUrl = `https://api.github.com/repos/${USERNAME}/${REPO}/contents/${path}`;
 
             try {
                 const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error(`Ошибка сети: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`Ошибка сети: ${response.status}`);
                 const data = await response.json();
-
                 fileList.innerHTML = '';
                 
-                // Сортировка: сначала папки, потом файлы
                 data.sort((a, b) => {
-                    if (a.type === b.type) {
-                        return a.name.localeCompare(b.name);
-                    }
+                    if (a.type === b.type) return a.name.localeCompare(b.name);
                     return a.type === 'dir' ? -1 : 1;
                 });
 
-                // Добавляем ссылку "Назад" если мы не в корневой папке
                 if (path !== '') {
                     const parentPath = path.substring(0, path.lastIndexOf('/'));
                     const backLink = document.createElement('li');
-                    backLink.innerHTML = `<svg class="icon" viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M7.78 12.53a.75.75 0 01-1.06 0L2.47 8.28a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 1.06L4.81 7h7.44a.75.75 0 010 1.5H4.81l2.97 2.97a.75.75 0 010 1.06z"></path></svg> <a href="#" onclick="event.preventDefault(); fetchAndDisplayFiles('${parentPath}')">.. Назад</a>`;
+                    backLink.innerHTML = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg> <a href="#" onclick="event.preventDefault(); fetchAndDisplayFiles('${parentPath}')">... Назад</a>`;
                     fileList.appendChild(backLink);
                 }
-
+                
+                let itemIndex = 0;
                 for (const item of data) {
-                    // Пропускаем служебные файлы
-                    if (item.name === 'index.html' || item.name === 'README.md') {
+                    if (item.name === 'index.html' || item.name === 'README.md' || item.name.startsWith('.')) {
                         continue;
                     }
 
                     const listItem = document.createElement('li');
-                    let displayItem;
+                    listItem.style.animationDelay = `${itemIndex * 50}ms`; // Анимация появления с задержкой
+
+                    const folderIcon = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" /></svg>`;
+                    const fileIcon = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" /></svg>`;
 
                     if (item.type === 'dir') {
-                        // Это папка
-                        displayItem = `<svg class="icon" viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25V4.75A1.75 1.75 0 0014.25 3h-5.5a.25.25 0 01-.2-.1l-.9-1.2C8.325 1.25 7.89 1 7.5 1H1.75z"></path></svg> <a href="#" onclick="event.preventDefault(); fetchAndDisplayFiles('${item.path}')">${item.name}</a>`;
+                        listItem.innerHTML = `${folderIcon} <a href="#" onclick="event.preventDefault(); fetchAndDisplayFiles('${item.path}')">${item.name}</a>`;
                     } else {
-                        // Это файл
-                        displayItem = `<svg class="icon" viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6.19l-3.22-3.22H3.75zM5.75 3h2.5V5h-2.5V3zm-2 10.5V2h1.5v3.5A1.5 1.5 0 006.75 7h2.5A1.5 1.5 0 0010.75 5.5V2h1.5v11.5h-8.5zM9.25 2.75l2.5 2.5h-2.5V2.75z"></path></svg> <a href="${item.download_url}" target="_blank" download>${item.name}</a>`;
+                        listItem.innerHTML = `${fileIcon} <a href="${item.download_url}" target="_blank" download>${item.name}</a>`;
                     }
-                    listItem.innerHTML = displayItem;
                     fileList.appendChild(listItem);
+                    itemIndex++;
                 }
 
             } catch (error) {
-                fileList.innerHTML = `<div class="loader">Не удалось загрузить файлы. Ошибка: ${error.message}</div>`;
+                fileList.innerHTML = `<li style="opacity:1;">Не удалось загрузить файлы: ${error.message}</li>`;
             }
         }
 
-        // Первоначальная загрузка
         fetchAndDisplayFiles();
     </script>
 </body>

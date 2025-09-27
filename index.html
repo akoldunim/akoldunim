@@ -65,81 +65,64 @@
             transition: background-color 0.3s, border-color 0.3s;
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 22px;
-        }
+        header h1 { margin: 0; font-size: 22px; }
+        #theme-toggle { background: none; border: none; cursor: pointer; padding: 5px; border-radius: 50%; }
+        #theme-toggle:hover { background-color: var(--border-color); }
+        #theme-toggle .icon { width: 22px; height: 22px; fill: var(--text-color); }
+        #file-list { list-style-type: none; padding: 10px; margin: 0; }
+        #file-list li { display: flex; align-items: center; padding: 12px 15px; border-radius: 6px; animation: fadeIn 0.5s ease-out forwards; opacity: 0; transition: background-color 0.2s, transform 0.2s; }
+        #file-list li:hover { background-color: var(--link-hover-bg); transform: scale(1.02); }
+        #file-list a { text-decoration: none; color: var(--link-color); font-weight: 500; font-size: 16px; }
+        #file-list .icon { margin-right: 15px; width: 20px; height: 20px; fill: var(--text-color); flex-shrink: 0; }
+        .loader { display: flex; justify-content: center; padding: 50px; }
+        .spinner { border: 4px solid var(--border-color); border-top: 4px solid var(--link-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        #theme-toggle {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-        }
-        #theme-toggle:hover {
-            background-color: var(--border-color);
-        }
-        #theme-toggle .icon {
-            width: 22px;
-            height: 22px;
-            fill: var(--text-color);
-        }
-
-        #file-list {
-            list-style-type: none;
-            padding: 10px;
-            margin: 0;
-        }
-
-        #file-list li {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            border-radius: 6px;
-            animation: fadeIn 0.5s ease-out forwards;
-            opacity: 0; /* Начальное состояние для анимации */
-            transition: background-color 0.2s, transform 0.2s;
-        }
-
-        #file-list li:hover {
-            background-color: var(--link-hover-bg);
-            transform: scale(1.02);
-        }
-
-        #file-list a {
-            text-decoration: none;
-            color: var(--link-color);
-            font-weight: 500;
-            font-size: 16px;
-        }
-
-        #file-list .icon {
-            margin-right: 15px;
-            width: 20px;
-            height: 20px;
-            fill: var(--text-color);
-            flex-shrink: 0;
-        }
-
-        /* Анимация загрузчика */
-        .loader {
+        /* --- НОВЫЕ СТИЛИ ДЛЯ ПРЕДПРОСМОТРА --- */
+        #image-preview-modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
             display: flex;
             justify-content: center;
-            padding: 50px;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-        .spinner {
-            border: 4px solid var(--border-color);
-            border-top: 4px solid var(--link-color);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+
+        #image-preview-modal.visible {
+            opacity: 1;
+            visibility: visible;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        #preview-image {
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
         }
+        
+        #image-preview-modal.visible #preview-image {
+            transform: scale(1);
+        }
+
+        #close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        #close-modal:hover { transform: scale(1.2); }
+        /* --- КОНЕЦ НОВЫХ СТИЛЕЙ --- */
 
     </style>
 </head>
@@ -148,49 +131,71 @@
     <div class="container">
         <header>
             <h1 id="header-title">Мои Файлы</h1>
-            <button id="theme-toggle" title="Сменить тему">
-                <!-- Иконка будет вставлена через JS -->
-            </button>
+            <button id="theme-toggle" title="Сменить тему"></button>
         </header>
         
-        <ul id="file-list">
-            <!-- Содержимое генерируется скриптом -->
-        </ul>
+        <ul id="file-list"></ul>
+    </div>
+
+    <!-- НОВЫЙ HTML БЛОК ДЛЯ ОКНА ПРЕДПРОСМОТРА -->
+    <div id="image-preview-modal">
+        <span id="close-modal">&times;</span>
+        <img id="preview-image" src="" alt="Предпросмотр изображения">
     </div>
 
     <script>
         // --- НАСТРОЙКА ---
-        const USERNAME = 'akoldunim'; // <-- ЗАМЕНИТЕ ЭТО НА СВОЙ НИКНЕЙМ НА GITHUB
+        const USERNAME = 'akoldunim'; // <-- Убедитесь, что здесь ваш никнейм
         // --- КОНЕЦ НАСТРОЙКИ ---
 
         const REPO = `${USERNAME}.github.io`;
         const fileList = document.getElementById('file-list');
 
-        // --- ЛОГИКА ТЕМНОЙ ТЕМЫ ---
+        // --- ЛОГИКА ТЕМНОЙ ТЕМЫ (без изменений) ---
         const themeToggle = document.getElementById('theme-toggle');
         const sunIcon = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 10a1 1 0 011-1h1a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>`;
         const moonIcon = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>`;
-
-        // Проверяем сохраненную тему при загрузке
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('dark-mode');
             themeToggle.innerHTML = sunIcon;
         } else {
             themeToggle.innerHTML = moonIcon;
         }
-
         themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             if (document.body.classList.contains('dark-mode')) {
                 themeToggle.innerHTML = sunIcon;
-                localStorage.setItem('theme', 'dark'); // Сохраняем выбор
+                localStorage.setItem('theme', 'dark');
             } else {
                 themeToggle.innerHTML = moonIcon;
                 localStorage.setItem('theme', 'light');
             }
         });
 
-        // --- ЛОГИКА ОТОБРАЖЕНИЯ ФАЙЛОВ ---
+        // --- НОВАЯ ЛОГИКА ДЛЯ ПРЕДПРОСМОТРА ИЗОБРАЖЕНИЙ ---
+        const modal = document.getElementById('image-preview-modal');
+        const modalImage = document.getElementById('preview-image');
+        const closeModal = document.getElementById('close-modal');
+
+        function showImagePreview(imageUrl) {
+            modalImage.src = imageUrl;
+            modal.classList.add('visible');
+            document.body.style.overflow = 'hidden'; // Запретить прокрутку фона
+        }
+
+        function hideImagePreview() {
+            modal.classList.remove('visible');
+            document.body.style.overflow = 'auto'; // Разрешить прокрутку фона
+        }
+
+        closeModal.addEventListener('click', hideImagePreview);
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) { // Закрывать при клике на темный фон
+                hideImagePreview();
+            }
+        });
+        
+        // --- ЛОГИКА ОТОБРАЖЕНИЯ ФАЙЛОВ (с изменениями) ---
         async function fetchAndDisplayFiles(path = '') {
             fileList.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
             const apiUrl = `https://api.github.com/repos/${USERNAME}/${REPO}/contents/${path}`;
@@ -214,20 +219,28 @@
                 }
                 
                 let itemIndex = 0;
+                const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp'];
+
                 for (const item of data) {
                     if (item.name === 'index.html' || item.name === 'README.md' || item.name.startsWith('.')) {
                         continue;
                     }
 
                     const listItem = document.createElement('li');
-                    listItem.style.animationDelay = `${itemIndex * 50}ms`; // Анимация появления с задержкой
+                    listItem.style.animationDelay = `${itemIndex * 50}ms`;
 
                     const folderIcon = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" /></svg>`;
                     const fileIcon = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" /></svg>`;
+                    
+                    const isImage = imageExtensions.some(ext => item.name.toLowerCase().endsWith(ext));
 
                     if (item.type === 'dir') {
                         listItem.innerHTML = `${folderIcon} <a href="#" onclick="event.preventDefault(); fetchAndDisplayFiles('${item.path}')">${item.name}</a>`;
+                    } else if (isImage) {
+                        // ИЗМЕНЕНИЕ: Ссылка для картинок теперь открывает предпросмотр
+                        listItem.innerHTML = `${fileIcon} <a href="${item.download_url}" onclick="event.preventDefault(); showImagePreview('${item.download_url}')">${item.name}</a>`;
                     } else {
+                        // Стандартная ссылка для скачивания для остальных файлов
                         listItem.innerHTML = `${fileIcon} <a href="${item.download_url}" target="_blank" download>${item.name}</a>`;
                     }
                     fileList.appendChild(listItem);

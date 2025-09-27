@@ -5,66 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мои Файлы</title>
     <style>
-        /* CSS Переменные для легкой смены темы */
         :root {
-            --bg-color: #f6f8fa;
-            --container-bg: #ffffff;
-            --text-color: #24292e;
-            --border-color: #e1e4e8;
-            --link-color: #0366d6;
-            --link-hover-bg: #f1f8ff;
-            --header-bg: #f6f8fa;
-            --shadow-color: rgba(149, 157, 165, 0.1);
+            --bg-color: #f6f8fa; --container-bg: #ffffff; --text-color: #24292e; --border-color: #e1e4e8;
+            --link-color: #0366d6; --link-hover-bg: #f1f8ff; --header-bg: #f6f8fa; --shadow-color: rgba(149, 157, 165, 0.1);
         }
-
-        /* Стиль для темной темы */
         body.dark-mode {
-            --bg-color: #0d1117;
-            --container-bg: #161b22;
-            --text-color: #c9d1d9;
-            --border-color: #30363d;
-            --link-color: #58a6ff;
-            --link-hover-bg: #1f6feb33;
-            --header-bg: #161b22;
-            --shadow-color: rgba(0, 0, 0, 0.2);
+            --bg-color: #0d1117; --container-bg: #161b22; --text-color: #c9d1d9; --border-color: #30363d;
+            --link-color: #58a6ff; --link-hover-bg: #1f6feb33; --header-bg: #161b22; --shadow-color: rgba(0, 0, 0, 0.2);
         }
-
-        /* Общие стили и анимация появления */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: var(--container-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            box-shadow: 0 8px 24px var(--shadow-color);
-            overflow: hidden;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 25px;
-            background-color: var(--header-bg);
-            border-bottom: 1px solid var(--border-color);
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; transition: background-color 0.3s, color 0.3s; }
+        .container { max-width: 800px; margin: 20px auto; background-color: var(--container-bg); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: 0 8px 24px var(--shadow-color); overflow: hidden; transition: background-color 0.3s, border-color 0.3s; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background-color: var(--header-bg); border-bottom: 1px solid var(--border-color); transition: background-color 0.3s, border-color 0.3s; }
         header h1 { margin: 0; font-size: 22px; }
         #theme-toggle { background: none; border: none; cursor: pointer; padding: 5px; border-radius: 50%; }
         #theme-toggle:hover { background-color: var(--border-color); }
@@ -78,51 +30,25 @@
         .spinner { border: 4px solid var(--border-color); border-top: 4px solid var(--link-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- НОВЫЕ СТИЛИ ДЛЯ ПРЕДПРОСМОТРА --- */
-        #image-preview-modal {
-            position: fixed;
-            z-index: 1000;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        #image-preview-modal.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        #preview-image {
-            max-width: 90vw;
-            max-height: 85vh;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transform: scale(0.8);
-            transition: transform 0.3s ease;
-        }
-        
-        #image-preview-modal.visible #preview-image {
-            transform: scale(1);
-        }
-
-        #close-modal {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: #fff;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
+        /* --- СТИЛИ ДЛЯ ГАЛЕРЕИ --- */
+        #image-preview-modal { position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
+        #image-preview-modal.visible { opacity: 1; visibility: visible; transition-delay: 0s; }
+        #preview-image { max-width: 90vw; max-height: 85vh; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: scale(0.8); transition: transform 0.3s ease; }
+        #image-preview-modal.visible #preview-image { transform: scale(1); }
+        #close-modal { position: absolute; top: 15px; right: 25px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; transition: transform 0.2s; z-index: 1002; }
         #close-modal:hover { transform: scale(1.2); }
-        /* --- КОНЕЦ НОВЫХ СТИЛЕЙ --- */
+        
+        /* НОВЫЕ СТИЛИ: Стрелки навигации */
+        .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background-color: rgba(30, 30, 30, 0.5); color: white; border: none; cursor: pointer; padding: 15px; border-radius: 50%; z-index: 1001; transition: background-color 0.2s, opacity 0.3s; user-select: none; }
+        .nav-arrow:hover { background-color: rgba(0, 0, 0, 0.8); }
+        .nav-arrow.hidden { opacity: 0; pointer-events: none; }
+        #prev-image { left: 20px; }
+        #next-image { right: 20px; }
+        .nav-arrow svg { width: 24px; height: 24px; fill: currentColor; }
+
+        /* НОВЫЙ СТИЛЬ: Загрузчик для картинки */
+        #image-loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; }
+        #image-loader .spinner { width: 50px; height: 50px; border-top-color: #fff; }
 
     </style>
 </head>
@@ -133,13 +59,21 @@
             <h1 id="header-title">Мои Файлы</h1>
             <button id="theme-toggle" title="Сменить тему"></button>
         </header>
-        
         <ul id="file-list"></ul>
     </div>
 
-    <!-- НОВЫЙ HTML БЛОК ДЛЯ ОКНА ПРЕДПРОСМОТРА -->
+    <!-- HTML БЛОК ДЛЯ ГАЛЕРЕИ -->
     <div id="image-preview-modal">
         <span id="close-modal">&times;</span>
+        <!-- НОВЫЕ ЭЛЕМЕНТЫ: Стрелки -->
+        <button id="prev-image" class="nav-arrow" title="Предыдущее (←)">
+            <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+        </button>
+        <button id="next-image" class="nav-arrow" title="Следующее (→)">
+            <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+        </button>
+        <!-- НОВЫЙ ЭЛЕМЕНТ: Загрузчик -->
+        <div id="image-loader"><div class="spinner"></div></div>
         <img id="preview-image" src="" alt="Предпросмотр изображения">
     </div>
 
@@ -150,54 +84,83 @@
 
         const REPO = `${USERNAME}.github.io`;
         const fileList = document.getElementById('file-list');
+        // --- ЭЛЕМЕНТЫ ГАЛЕРЕИ ---
+        const modal = document.getElementById('image-preview-modal');
+        const modalImage = document.getElementById('preview-image');
+        const closeModalBtn = document.getElementById('close-modal');
+        const prevBtn = document.getElementById('prev-image');
+        const nextBtn = document.getElementById('next-image');
+        const imageLoader = document.getElementById('image-loader');
+
+        // НОВЫЕ ПЕРЕМЕННЫЕ: для хранения списка картинок и текущего индекса
+        let galleryImages = [];
+        let currentImageIndex = -1;
 
         // --- ЛОГИКА ТЕМНОЙ ТЕМЫ (без изменений) ---
         const themeToggle = document.getElementById('theme-toggle');
         const sunIcon = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 10a1 1 0 011-1h1a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>`;
         const moonIcon = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>`;
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-            themeToggle.innerHTML = sunIcon;
-        } else {
-            themeToggle.innerHTML = moonIcon;
-        }
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            if (document.body.classList.contains('dark-mode')) {
-                themeToggle.innerHTML = sunIcon;
-                localStorage.setItem('theme', 'dark');
-            } else {
-                themeToggle.innerHTML = moonIcon;
-                localStorage.setItem('theme', 'light');
-            }
-        });
+        if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); themeToggle.innerHTML = sunIcon; } else { themeToggle.innerHTML = moonIcon; }
+        themeToggle.addEventListener('click', () => { document.body.classList.toggle('dark-mode'); if (document.body.classList.contains('dark-mode')) { themeToggle.innerHTML = sunIcon; localStorage.setItem('theme', 'dark'); } else { themeToggle.innerHTML = moonIcon; localStorage.setItem('theme', 'light'); } });
 
-        // --- НОВАЯ ЛОГИКА ДЛЯ ПРЕДПРОСМОТРА ИЗОБРАЖЕНИЙ ---
-        const modal = document.getElementById('image-preview-modal');
-        const modalImage = document.getElementById('preview-image');
-        const closeModal = document.getElementById('close-modal');
+        // --- ОБНОВЛЕННАЯ ЛОГИКА ГАЛЕРЕИ ---
+        function showImagePreview(index) {
+            currentImageIndex = index;
+            imageLoader.style.display = 'block';
+            modalImage.style.display = 'none';
 
-        function showImagePreview(imageUrl) {
-            modalImage.src = imageUrl;
+            // Предзагрузка изображения для плавности
+            const img = new Image();
+            img.src = galleryImages[currentImageIndex];
+            img.onload = () => {
+                imageLoader.style.display = 'none';
+                modalImage.style.display = 'block';
+                modalImage.src = img.src;
+            };
+
+            // Показываем/скрываем стрелки в начале и конце галереи
+            prevBtn.classList.toggle('hidden', currentImageIndex === 0);
+            nextBtn.classList.toggle('hidden', currentImageIndex === galleryImages.length - 1);
+            
             modal.classList.add('visible');
-            document.body.style.overflow = 'hidden'; // Запретить прокрутку фона
+            document.body.style.overflow = 'hidden';
         }
 
         function hideImagePreview() {
             modal.classList.remove('visible');
-            document.body.style.overflow = 'auto'; // Разрешить прокрутку фона
+            document.body.style.overflow = 'auto';
         }
 
-        closeModal.addEventListener('click', hideImagePreview);
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) { // Закрывать при клике на темный фон
-                hideImagePreview();
+        function showNextImage() {
+            if (currentImageIndex < galleryImages.length - 1) {
+                showImagePreview(currentImageIndex + 1);
             }
-        });
+        }
+
+        function showPreviousImage() {
+            if (currentImageIndex > 0) {
+                showImagePreview(currentImageIndex - 1);
+            }
+        }
         
+        // Обработчики событий для кнопок и фона
+        closeModalBtn.addEventListener('click', hideImagePreview);
+        prevBtn.addEventListener('click', showPreviousImage);
+        nextBtn.addEventListener('click', showNextImage);
+        modal.addEventListener('click', (event) => { if (event.target === modal) hideImagePreview(); });
+
+        // НОВОЕ: Навигация с клавиатуры
+        document.addEventListener('keydown', (event) => {
+            if (!modal.classList.contains('visible')) return;
+            if (event.key === 'ArrowRight') showNextImage();
+            if (event.key === 'ArrowLeft') showPreviousImage();
+            if (event.key === 'Escape') hideImagePreview();
+        });
+
         // --- ЛОГИКА ОТОБРАЖЕНИЯ ФАЙЛОВ (с изменениями) ---
         async function fetchAndDisplayFiles(path = '') {
             fileList.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
+            galleryImages = []; // Очищаем галерею при заходе в новую папку
             const apiUrl = `https://api.github.com/repos/${USERNAME}/${REPO}/contents/${path}`;
 
             try {
@@ -206,10 +169,7 @@
                 const data = await response.json();
                 fileList.innerHTML = '';
                 
-                data.sort((a, b) => {
-                    if (a.type === b.type) return a.name.localeCompare(b.name);
-                    return a.type === 'dir' ? -1 : 1;
-                });
+                data.sort((a, b) => { if (a.type === b.type) return a.name.localeCompare(b.name); return a.type === 'dir' ? -1 : 1; });
 
                 if (path !== '') {
                     const parentPath = path.substring(0, path.lastIndexOf('/'));
@@ -218,14 +178,16 @@
                     fileList.appendChild(backLink);
                 }
                 
-                let itemIndex = 0;
                 const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp'];
+                const fileItems = data.filter(item => !(item.name === 'index.html' || item.name === 'README.md' || item.name.startsWith('.')));
+                
+                // Сначала формируем список всех картинок в папке
+                galleryImages = fileItems
+                    .filter(item => imageExtensions.some(ext => item.name.toLowerCase().endsWith(ext)))
+                    .map(item => item.download_url);
 
-                for (const item of data) {
-                    if (item.name === 'index.html' || item.name === 'README.md' || item.name.startsWith('.')) {
-                        continue;
-                    }
-
+                let itemIndex = 0;
+                for (const item of fileItems) {
                     const listItem = document.createElement('li');
                     listItem.style.animationDelay = `${itemIndex * 50}ms`;
 
@@ -237,10 +199,9 @@
                     if (item.type === 'dir') {
                         listItem.innerHTML = `${folderIcon} <a href="#" onclick="event.preventDefault(); fetchAndDisplayFiles('${item.path}')">${item.name}</a>`;
                     } else if (isImage) {
-                        // ИЗМЕНЕНИЕ: Ссылка для картинок теперь открывает предпросмотр
-                        listItem.innerHTML = `${fileIcon} <a href="${item.download_url}" onclick="event.preventDefault(); showImagePreview('${item.download_url}')">${item.name}</a>`;
+                        const imageIndex = galleryImages.indexOf(item.download_url);
+                        listItem.innerHTML = `${fileIcon} <a href="#" onclick="event.preventDefault(); showImagePreview(${imageIndex})">${item.name}</a>`;
                     } else {
-                        // Стандартная ссылка для скачивания для остальных файлов
                         listItem.innerHTML = `${fileIcon} <a href="${item.download_url}" target="_blank" download>${item.name}</a>`;
                     }
                     fileList.appendChild(listItem);

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои файлы</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f6f8fa; }
+        .container { max-width: 800px; margin: auto; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        header { padding: 20px; border-bottom: 1px solid #e1e4e8; }
+        header h1 { margin: 0; }
+        #file-list { list-style-type: none; padding: 20px; }
+        #file-list li { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #e1e4e8; }
+        #file-list li:last-child { border-bottom: none; }
+        #file-list a { text-decoration: none; color: #0366d6; font-weight: 500; font-size: 16px; }
+        #file-list a:hover { text-decoration: underline; }
+        .icon { margin-right: 15px; width: 20px; height: 20px; }
+        .loader { text-align: center; padding: 40px; font-size: 18px; color: #586069; }
+        .back-link { padding: 0 20px 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1 id="header-title">Мои файлы</h1>
+        </header>
+        
+        <div id="path-navigator"></div>
+
+        <ul id="file-list">
+            <div class="loader">Загрузка данных...</div>
+        </ul>
+    </div>
+
+    <script>
+        // --- НАСТРОЙКА ---
+        const USERNAME = 'akoldunim'; // <-- ЗАМЕНИТЕ ЭТО НА СВОЙ НИКНЕЙМ НА GITHUB
+        // --- КОНЕЦ НАСТРОЙКИ ---
+
+        const REPO = `${USERNAME}.github.io`;
+        const fileList = document.getElementById('file-list');
+        const headerTitle = document.getElementById('header-title');
+        const pathNavigator = document.getElementById('path-navigator');
+
+        async function fetchAndDisplayFiles(path = '') {
+            fileList.innerHTML = '<div class="loader">Загрузка данных...</div>';
+            const apiUrl = `https://api.github.com/repos/${USERNAME}/${REPO}/contents/${path}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`Ошибка сети: ${response.status}`);
+                }
+                const data = await response.json();
+
+                fileList.innerHTML = '';
+                
+                // Сортировка: сначала папки, потом файлы
+                data.sort((a, b) => {
+                    if (a.type === b.type) {
+                        return a.name.localeCompare(b.name);
+                    }
+                    return a.type === 'dir' ? -1 : 1;
+                });
+
+                // Добавляем ссылку "Назад" если мы не в корневой папке
+                if (path !== '') {
+                    const parentPath = path.substring(0, path.lastIndexOf('/'));
+                    const backLink = document.createElement('li');
+                    backLink.innerHTML = `<svg class="icon" viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M7.78 12.53a.75.75 0 01-1.06 0L2.47 8.28a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 1.06L4.81 7h7.44a.75.75 0 010 1.5H4.81l2.97 2.97a.75.75 0 010 1.06z"></path></svg> <a href="#" onclick="event.preventDefault(); fetchAndDisplayFiles('${parentPath}')">.. Назад</a>`;
+                    fileList.appendChild(backLink);
+                }
+
+                for (const item of data) {
+                    // Пропускаем служебные файлы
+                    if (item.name === 'index.html' || item.name === 'README.md') {
+                        continue;
+                    }
+
+                    const listItem = document.createElement('li');
+                    let displayItem;
+
+                    if (item.type === 'dir') {
+                        // Это папка
+                        displayItem = `<svg class="icon" viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25V4.75A1.75 1.75 0 0014.25 3h-5.5a.25.25 0 01-.2-.1l-.9-1.2C8.325 1.25 7.89 1 7.5 1H1.75z"></path></svg> <a href="#" onclick="event.preventDefault(); fetchAndDisplayFiles('${item.path}')">${item.name}</a>`;
+                    } else {
+                        // Это файл
+                        displayItem = `<svg class="icon" viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6.19l-3.22-3.22H3.75zM5.75 3h2.5V5h-2.5V3zm-2 10.5V2h1.5v3.5A1.5 1.5 0 006.75 7h2.5A1.5 1.5 0 0010.75 5.5V2h1.5v11.5h-8.5zM9.25 2.75l2.5 2.5h-2.5V2.75z"></path></svg> <a href="${item.download_url}" target="_blank" download>${item.name}</a>`;
+                    }
+                    listItem.innerHTML = displayItem;
+                    fileList.appendChild(listItem);
+                }
+
+            } catch (error) {
+                fileList.innerHTML = `<div class="loader">Не удалось загрузить файлы. Ошибка: ${error.message}</div>`;
+            }
+        }
+
+        // Первоначальная загрузка
+        fetchAndDisplayFiles();
+    </script>
+</body>
+</html>
